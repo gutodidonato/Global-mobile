@@ -27,11 +27,11 @@ const Stack = createNativeStackNavigator();
 
 const configTab = (screenOptions = {
   tabBarStyle: {
-    backgroundColor: "white",
+    backgroundColor: "#2832b3",
     borderColor: "black",
   },
-  tabBarActiveTintColor: "black",
-  tabBarActiveBackgroundColor: "#ffffff",
+  tabBarActiveTintColor: "white",
+  tabBarActiveBackgroundColor: "#2129a5",
 });
 
 function Tabs() {

@@ -40,8 +40,8 @@ export default function RecuperarSenha({ navigation }) {
         resizeMode="cover"
         style={styles.fundoPreto}
       >
-        <Image source={require("../assets/logo.png")} style={styles.logo} />
         <View style={styles.caixa}>
+          <Image source={require("../assets/logo.png")} style={styles.logo} />
           <Text style={styles.titulo}>Recuperar Senha</Text>
           <Text style={styles.textoLogin}>Email</Text>
           <TextInput 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   caixa: {
-    backgroundColor: "#1c5a94",
+    backgroundColor: "rgba(255, 255, 255, 0.678))",
     borderRadius: 50,
     width: "95%",
     height: 600,

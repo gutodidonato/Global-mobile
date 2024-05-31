@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   caixa: {
-    backgroundColor: "#1c5a94",
+    backgroundColor: "rgba(255, 255, 255, 0.678))",
     borderRadius: 50,
     width: "95%",
     height: 600,
