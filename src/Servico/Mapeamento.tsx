@@ -3,7 +3,7 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, View, Text } from 'react-native';
 import { AuthContext } from '../contexts/auth';
 
-export default function Cliente() {
+export default function Mapeamento() {
   const { user, logar, deslogar, location} = useContext(AuthContext);
 
   const latitudePos = location["coords"]["latitude"];

@@ -6,7 +6,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack"
 import { AuthContext } from "../contexts/auth"
 
 
-import Maps from "../Main/Maps";
+import Verificar from "../Main/Verificar";
 import Principal from "../Main/Principal";
 import Configuration from "../Main/Configuration";
 
@@ -48,7 +48,7 @@ function Tabs() {
           />
           <Tab.Screen
             name="Verificar"
-            component={Maps}
+            component={Verificar}
             options={{
               headerShown: false,
               tabBarIcon: () => (

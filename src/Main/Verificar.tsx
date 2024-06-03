@@ -11,10 +11,10 @@ import { StatusBar } from "expo-status-bar";
 import { useContext, useState } from "react";
 import React from "react";
 import { AuthContext } from "../contexts/auth";
-import Cliente from '../Servico/Cliente';
+import Cliente from '../Servico/Mapeamento';
 
 
-export default function Maps({ navigation }) {
+export default function Verificar({ navigation }) {
   const { user, logar, deslogar, location} = useContext(AuthContext);
 
 
