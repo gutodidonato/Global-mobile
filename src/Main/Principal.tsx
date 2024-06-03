@@ -17,7 +17,7 @@ import Lanches from "../Produtos/Lanches";
 
 export default function Principal({ navigation }) {
   const [servico, setServico] = useState([])
-  const { user, logar, deslogar} = useContext(AuthContext);
+  const { user, logar, deslogar, location} = useContext(AuthContext);
 
   console.log(user)
 
@@ -35,7 +35,7 @@ export default function Principal({ navigation }) {
   useEffect(() => {
     makeAPICall();
   }, []);
-
+  console.log(location);
 
   return (
     <View style={styles.container}>

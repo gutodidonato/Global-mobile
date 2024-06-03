@@ -14,7 +14,6 @@ import Configuration from "../Main/Configuration";
 
 import Login from "../Login/Login"
 import Cadastro from "../Login/Cadastro";
-import Lanches from "../Produtos/Lanches";
 import RecuperarSenha from "../Login/RecuperarSenha";
 
 
@@ -48,7 +47,7 @@ function Tabs() {
             }}
           />
           <Tab.Screen
-            name="Maps"
+            name="Verificar"
             component={Maps}
             options={{
               headerShown: false,
@@ -92,7 +91,6 @@ export default function Rotas() {
               <Stack.Screen name="RecuperarSenha" component={RecuperarSenha} options={{ headerShown: false }} />
               <Stack.Screen name="Cadastro" component={Cadastro} options={{ headerShown: false }} />
               <Stack.Screen name="Principal" component={Tabs} options={{ headerShown: false }} />
-              <Stack.Screen name="Lanches" component={Lanches} options={{ headerShown: false }} />
           </Stack.Navigator>
       </NavigationContainer>
   );

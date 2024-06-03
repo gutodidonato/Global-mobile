@@ -2,12 +2,16 @@ import React, {useState, createContext, useEffect} from 'react';
 import { signInWithEmailAndPassword, getAuth, signOut, createUserWithEmailAndPassword} from "firebase/auth";
 import { getDatabase, ref, get, set } from 'firebase/database';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Location from 'expo-location';
+
 
 export const AuthContext = createContext({});
 
 
 
 function AuthProvider({ children }) {
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
   const [user, setUser] = useState({});
 
   useEffect(()=>{
@@ -17,9 +21,28 @@ function AuthProvider({ children }) {
       setUser(JSON.parse(userStored));
     }
   }
+  (async () => {
+      
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
+  })();
+    console.log(location)
     loadStorage()
 
   }, [])
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
+  }
   
   const auth = getAuth();
 
@@ -60,7 +83,7 @@ function AuthProvider({ children }) {
 
 
   return (
-    <AuthContext.Provider value={{ user, logar, deslogar }}>
+    <AuthContext.Provider value={{ user, logar, deslogar, location }}>
       {children}
     </AuthContext.Provider>
   );
