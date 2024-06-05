@@ -1,67 +1,85 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import { useContext, useEffect, useState } from "react";
-import React from "react";
-import { AuthContext } from "../contexts/auth";
+import React, { useState, useRef } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Camera } from 'expo-camera';
+import * as MediaLibrary from 'expo-media-library';
+import axios from 'axios';
 
+export default function App() {
+  const [facing, setFacing] = useState(Camera.Constants.Type.back);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
+  const cameraRef = useRef(null);
 
-import Lanches from "../Produtos/Lanches";
+  if (!permission) {
+    return <View />;
+  }
 
-export default function Principal({ navigation }) {
-  const [servico, setServico] = useState([])
-  const { user, logar, deslogar, location} = useContext(AuthContext);
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="Grant Camera Permission" />
+      </View>
+    );
+  }
 
-  console.log(user)
+  if (!mediaPermission) {
+    return <View />;
+  }
 
-  const makeAPICall = async () => {
-    try {
-      const response = await fetch(`http://192.168.0.83:8080/servicos/${user.status}`, {mode: "cors", });
-      const data = await response.json();
-      setServico(data);
-    } catch (e) {
-      console.error("Error fetching restaurantes:", e);
+  if (!mediaPermission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to access media library</Text>
+        <Button onPress={requestMediaPermission} title="Grant Media Library Permission" />
+      </View>
+    );
+  }
+
+  const toggleCameraFacing = () => {
+    setFacing(
+      facing === Camera.Constants.Type.back
+        ? Camera.Constants.Type.front
+        : Camera.Constants.Type.back
+    );
+  };
+
+  const takePictureAndUpload = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({ base64: true });
+      console.log(photo.uri);
+
+      axios({
+        method: "POST",
+        url: "https://detect.roboflow.com/fishes-troublemakers-polution/3",
+        params: {
+          api_key: "dcancgRDUVTmAWQjWwwm",
+        },
+        data: {
+          image: photo.base64,
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.log(error.message);
+      });
     }
   };
 
-
-  useEffect(() => {
-    makeAPICall();
-  }, []);
-  console.log(location);
-
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/fundo.png")}
-        resizeMode="cover"
-        style={styles.fundoPreto}
-      >
-        <View style={styles.caixa}>
-          <Image source={require("../assets/logo.png")} style={styles.logo} />
-          <Text style={styles.titulo}>Serviços para {user.status}</Text>
-          <FlatList
-          data={servico} 
-          renderItem={({ item }) => (
-          <View style={estilo.caixa}>
-          <TouchableOpacity onPress={() => {
-            item.nome === 'Lanches' ? navigation.navigate('Lanches') : console.log("Não implementado ainda");
-          }}>
-            <Text style={estilo.texto}>{item.nome}</Text>
+      <Camera style={styles.camera} type={facing} ref={cameraRef}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
           </TouchableOpacity>
-          </View>
-        )}
-        keyExtractor={(item) => item.nome} 
-      />
+          <TouchableOpacity style={styles.button} onPress={takePictureAndUpload}>
+            <Text style={styles.text}>Take Picture</Text>
+          </TouchableOpacity>
         </View>
-      </ImageBackground>
+      </Camera>
     </View>
   );
 }
@@ -69,54 +87,25 @@ export default function Principal({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0000005ce",
-    alignItems: "center",
-    justifyContent: "center",
+    justifyContent: 'center',
   },
-  fundoPreto: {
+  camera: {
     flex: 1,
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignContent: "flex-end",
-    flexDirection: "column",
-    alignItems: "center",
   },
-  logo: {
-    marginBottom: 50,
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
   },
-  caixa: {
-    backgroundColor: "rgba(255, 255, 255, 0.678))",
-    borderRadius: 50,
-    width: "95%",
-    height: 600,
-    display: "flex",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    marginTop: 100,
-    paddingTop: 40,
-    marginBottom: 50
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
   },
-  titulo: {
-    fontSize: 22,
-    marginBottom: 20
-  }
-
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
 });
-
-const estilo = StyleSheet.create({
-  caixa: {
-    flex: 1,
-    backgroundColor: "#000000",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 20,
-    paddingHorizontal: 30,
-    paddingVertical: 20,
-    marginVertical: 10
-  },
-  texto: {
-    color: "white"
-  }
-})
