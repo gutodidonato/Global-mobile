@@ -15,8 +15,10 @@ import { AuthContext} from "../contexts/auth";
 
 export default function Configuration({ navigation }) {
 
-  const {user, logar, deslogar} = useContext(AuthContext);
-
+  const {user, logar, deslogar, location} = useContext(AuthContext);
+  console.log(location.coords)
+  const latitude = location.coords.latitude
+  const longitude = location.coords.longitude
 
   async function handleLogout() {
     try {
@@ -45,7 +47,7 @@ export default function Configuration({ navigation }) {
           <Text style={configStyle.usuario}>{user.email}</Text>
 
           <Text style={configStyle.titulo}>Localização atual:</Text>
-          <Text style={configStyle.usuario}>{user.local}</Text>
+          <Text style={configStyle.usuario}>{latitude} / {longitude}</Text>
 
           <Text style={configStyle.titulo}>Status:</Text>
           <Text style={configStyle.usuario}>{user.status}</Text>

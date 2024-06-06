@@ -4,6 +4,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { NavigationContainer } from "@react-navigation/native";
 import {createNativeStackNavigator} from "@react-navigation/native-stack"
 import { AuthContext } from "../contexts/auth"
+import {Text} from 'react-native'
 
 
 import Verificar from "../Main/Verificar";
@@ -26,11 +27,11 @@ const Stack = createNativeStackNavigator();
 
 const configTab = (screenOptions = {
   tabBarStyle: {
-    backgroundColor: "#2832b3",
+    backgroundColor: "#3f6ca0",
     borderColor: "black",
   },
   tabBarActiveTintColor: "white",
-  tabBarActiveBackgroundColor: "#2129a5",
+  tabBarActiveBackgroundColor: "#315679",
 });
 
 function Tabs() {
@@ -44,6 +45,9 @@ function Tabs() {
               tabBarIcon: () => (
                 <Ionicons name="home" size={20} color={"#000000"}/>
               ),
+              tabBarLabel: ({color}) => (
+                <Text style={{color: '#000000', fontSize: 10}}>Principal</Text>
+              )
             }}
           />
           <Tab.Screen
@@ -54,6 +58,9 @@ function Tabs() {
               tabBarIcon: () => (
                 <Ionicons name="earth-outline" size={20} color={"#000000"} />
               ),
+              tabBarLabel: ({color}) => (
+                <Text style={{color: '#000000', fontSize: 10}}>Verificar</Text>
+              )
             }}
           />
                     <Tab.Screen
@@ -64,6 +71,9 @@ function Tabs() {
               tabBarIcon: () => (
                 <Ionicons name="person-circle-outline" size={20} color={"#000000"} />
               ),
+              tabBarLabel: ({color}) => (
+                <Text style={{color: '#000000', fontSize: 10}}>Configuration</Text>
+              )
             }}
           />
         </Tab.Navigator>

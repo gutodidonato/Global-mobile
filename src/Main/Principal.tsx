@@ -26,7 +26,7 @@ export default function Principal({ navigation }) {
   console.log(user.status)
 
 
-  return user.status === 'cliente' ? (
+  return user.status === 'usuario' ? (
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/fundo.png")}
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
   },
   caixa: {
-    backgroundColor: "rgba(255, 255, 255, 0.678))",
+    backgroundColor: "rgba(255, 255, 255, 0.527))",
     borderRadius: 50,
     width: "90%",
     height: "90%",
