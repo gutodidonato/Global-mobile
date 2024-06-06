@@ -15,7 +15,7 @@ import { AuthContext} from "../contexts/auth";
 
 export default function Configuration({ navigation }) {
 
-  const {user, logar, deslogar, location} = useContext(AuthContext);
+  const {user, deslogar, location} = useContext(AuthContext);
   console.log(location.coords)
   const latitude = location.coords.latitude
   const longitude = location.coords.longitude

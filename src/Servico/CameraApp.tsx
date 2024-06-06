@@ -1,14 +1,43 @@
 import axios from 'axios';
 import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { AuthContext } from '../contexts/auth';
 
 
 export default function CameraApp() {
   const [permission, requestPermission] = useCameraPermissions();
   const [mensagem, setMensagem] = useState('')
   const cameraRef = useRef(null);
+  const server = 'http://192.168.15.11'
+  const porta = ':8080'
+  const {user, deslogar, location} = useContext(AuthContext);
+
+  const latitude = location.coords.latitude
+  const longitude = location.coords.longitude
+
+
+  const makeAPICall = async () => {
+    try {
+      const response = await fetch(`${server}${porta}/criar_foco/${latitude}/${longitude}/${user.nome}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        console.log("foco criado");
+        setMensagem("FOCO CRIADO, não precisa mais mandar fotos!")
+        setTimeout(() => setMensagem(''), 8000);
+      } else {
+        console.error("Failed to create focus:", response.status, response.statusText);
+      }
+    } catch (e) {
+      console.error("Error apagando focos:", e);
+    }
+  };
 
   if (!permission) {
     return <View />;
@@ -68,8 +97,7 @@ export default function CameraApp() {
 
     if (hasTrash) {
       console.log("Trash!");
-      setMensagem("FOCO CRIADO, não precisa mais mandar fotos!")
-
+      makeAPICall()
     }
     else{
       console.log("No Trash")
