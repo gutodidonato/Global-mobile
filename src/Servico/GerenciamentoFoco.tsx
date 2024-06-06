@@ -3,7 +3,7 @@ import { useState } from 'react';
 import React = require('react');
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function CameraApp() {
+export default function Gerenciar() {
   const [permission, requestPermission] = useCameraPermissions();
 
   if (!permission) {

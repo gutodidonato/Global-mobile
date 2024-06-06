@@ -1,111 +1,121 @@
-import React, { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
-import axios from 'axios';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ImageBackground,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+} from "react-native";
+import { useContext, useEffect, useState } from "react";
+import React from "react";
+import { AuthContext } from "../contexts/auth";
+import CameraApp from "../Servico/CameraApp";
+import Gerenciar from "../Servico/GerenciamentoFoco";
 
-export default function App() {
-  const [facing, setFacing] = useState(Camera.Constants.Type.back);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
-  const cameraRef = useRef(null);
 
-  if (!permission) {
-    return <View />;
-  }
+export default function Principal({ navigation }) {
+  const [servico, setServico] = useState([])
+  const { user, location} = useContext(AuthContext);
 
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Camera Permission" />
-      </View>
-    );
-  }
+  console.log(user)
 
-  if (!mediaPermission) {
-    return <View />;
-  }
+ 
+  console.log(location);
+  console.log(user.status)
 
-  if (!mediaPermission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={{ textAlign: 'center' }}>We need your permission to access media library</Text>
-        <Button onPress={requestMediaPermission} title="Grant Media Library Permission" />
-      </View>
-    );
-  }
 
-  const toggleCameraFacing = () => {
-    setFacing(
-      facing === Camera.Constants.Type.back
-        ? Camera.Constants.Type.front
-        : Camera.Constants.Type.back
-    );
-  };
-
-  const takePictureAndUpload = async () => {
-    if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync({ base64: true });
-      console.log(photo.uri);
-
-      axios({
-        method: "POST",
-        url: "https://detect.roboflow.com/fishes-troublemakers-polution/3",
-        params: {
-          api_key: "dcancgRDUVTmAWQjWwwm",
-        },
-        data: {
-          image: photo.base64,
-        },
-      })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error.message);
-      });
-    }
-  };
-
-  return (
+  return user.status === 'usuario' ? (
     <View style={styles.container}>
-      <Camera style={styles.camera} type={facing} ref={cameraRef}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={takePictureAndUpload}>
-            <Text style={styles.text}>Take Picture</Text>
-          </TouchableOpacity>
+      <ImageBackground
+        source={require("../assets/fundo.png")}
+        resizeMode="cover"
+        style={styles.fundoPreto}
+      >
+        <View style={styles.caixa}>
+            <View style={styles.cameraNossa}>
+              <Image source={require("../assets/logo.png")} style={styles.logo} />
+              <CameraApp/>
+          </View>
         </View>
-      </Camera>
+      </ImageBackground>
     </View>
-  );
+  ):
+  (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require("../assets/fundo.png")}
+        resizeMode="cover"
+        style={styles.fundoPreto}
+      >
+        <View style={styles.caixa}>
+            <View style={styles.cameraNossa}>
+              <Image source={require("../assets/logo.png")} style={styles.logo} />
+              <Gerenciar/>
+          </View>
+        </View>
+      </ImageBackground>
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: "#0000005ce",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  camera: {
+  fundoPreto: {
     flex: 1,
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignContent: "flex-end",
+    flexDirection: "column",
+    alignItems: "center",
   },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
+  cameraNossa: {
+    width: '80%',
+    height: '90%'
   },
-  button: {
-    flex: 1,
-    alignSelf: 'flex-end',
-    alignItems: 'center',
+  logo: {
+    marginBottom: 50,
+    marginHorizontal: 'auto',
   },
-  text: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+  caixa: {
+    backgroundColor: "rgba(255, 255, 255, 0.678))",
+    borderRadius: 50,
+    width: "90%",
+    height: "90%",
+    display: "flex",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: 100,
+    paddingTop: 40,
+    marginBottom: 50
   },
+  titulo: {
+    fontSize: 22,
+    marginBottom: 20
+  }
+
 });
+
+const estilo = StyleSheet.create({
+  caixa: {
+    flex: 1,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
+    paddingHorizontal: 30,
+    paddingVertical: 20,
+    marginVertical: 10
+  },
+  texto: {
+    color: "white"
+  }
+})
