@@ -26,7 +26,7 @@ export default function Principal({ navigation }) {
   console.log(user.status)
 
 
-  return user.status === 'usuario' ? (
+  return user.status === 'cliente' ? (
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/fundo.png")}

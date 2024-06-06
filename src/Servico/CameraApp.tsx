@@ -1,84 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
+import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useRef, useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 export default function CameraApp() {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [cameraRef, setCameraRef] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [mensagem, setMensagem] = useState('')
+  const cameraRef = useRef(null);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
-
-  const handleCameraStream = async () => {
-    if (!hasPermission) return;
-  
-    const camera = await Camera.getCameraPermissionsAsync();
-    if (!camera || !camera.granted) return;
-  
-    const library = await MediaLibrary.getPermissionsAsync();
-    if (!library || !library.granted) return;
-  
-    setCameraRef(!camera); 
-  };
-
-  if (hasPermission === null) {
+  if (!permission) {
     return <View />;
   }
 
-  if (!hasPermission) {
+  if (!permission.granted) {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={() => Camera.requestCameraPermissionsAsync().then(({ status }) => setHasPermission(status === 'granted'))} title="Grant Permission" />
+        <Button onPress={requestPermission} title="grant permission" />
       </View>
     );
   }
 
   const takePicture = async () => {
-    if (cameraRef) {
-      const photo = await cameraRef.takePictureAsync({ base64: true });
-      uploadImage(photo.base64);
+    if (cameraRef.current) {
+      const data = await cameraRef.current.takePictureAsync({ base64: true });
+      const resizedImage = await resizeImage(data.uri);
+      console.log("Imagem criada")
+      uploadImage(resizedImage.base64);
     }
   };
 
+  const resizeImage = async (uri) => {
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ resize: { width: 800 } }],
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG, base64: true }
+    );
+    return manipulatedImage;
+  };
+
   const uploadImage = (base64) => {
+    const formattedBase64 = `data:image/jpeg;base64,${base64}`;
     axios({
       method: "POST",
-      url: "https://detect.roboflow.com/fishes-troublemakers-polution/3",
+      url: "https://detect.roboflow.com/lixo-na-praiaa/2",
       params: {
-        api_key: "dcancgRDUVTmAWQjWwwm",
+          api_key: "4GVVSjKtSOvGIeJa4dTN"
       },
-      data: {
-        image: base64,
-      },
-    })
+      data: formattedBase64,
+      headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+      }
+      })
     .then(response => {
       console.log(response.data);
+      checkForTrash(response.data);
     })
     .catch(error => {
       console.log(error.message);
     });
   };
+  const checkForTrash = (data) => {
+    const predictions = data.predictions || [];
+    const hasTrash = predictions.some(prediction => prediction.class === "Trash" && prediction.confidence > 0.6);
+
+    if (hasTrash) {
+      console.log("Trash!");
+      setMensagem("FOCO CRIADO, não precisa mais mandar fotos!")
+
+    }
+    else{
+      console.log("No Trash")
+    }
+  };
+
 
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={cameraRef} onCameraReady={handleCameraStream}>
+      <CameraView 
+        style={styles.camera}
+        ref={cameraRef}>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={takePicture}>
+          <TouchableOpacity 
+            style={styles.button}
+            onPress={takePicture}>
             <Text style={styles.text}>Capture Focus</Text>
           </TouchableOpacity>
         </View>
-      </Camera>
+      </CameraView>
+      <Text style={styles.mensagem}>{mensagem}</Text>
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -98,10 +115,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'flex-end',
     alignItems: 'center',
+    backgroundColor: "#5f393971",
+    borderRadius: 30,
+    paddingHorizontal: 5,
+    paddingVertical: 10
   },
   text: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
   },
+  mensagem: {
+    color: '#ff0000',
+    alignSelf: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+    marginTop: 5,
+    fontWeight: 'bold'
+  }
 });
