@@ -82,6 +82,6 @@ email@email.com
 ---------------------------------------
 ##  OBS:
 
-para rodar o backend e o front: é necessário utilizar o seu ipv4, altere o meu
+para rodar o backend e o front: é necessário utilizar o seu ipv4, altere o ip nos códigos
 e é necessário instalar o instant_client/ instalar os modulos do requirements
 
