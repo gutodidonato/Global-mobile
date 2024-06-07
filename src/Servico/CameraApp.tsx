@@ -3,22 +3,19 @@ import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import React, { useContext, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImageManipulator from 'expo-image-manipulator';
-import { AuthContext } from '../contexts/auth';
 
 
-export default function CameraApp() {
+export default function CameraApp({ user, latitude, longitude }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [mensagem, setMensagem] = useState('')
   const cameraRef = useRef(null);
-  const server = 'http://192.168.15.11'
+  const server = 'http://192.168.0.83'
   const porta = ':8080'
-  const {user, deslogar, location} = useContext(AuthContext);
 
-  const latitude = location.coords.latitude
-  const longitude = location.coords.longitude
 
 
   const makeAPICall = async () => {
+    console.log(latitude)
     try {
       const response = await fetch(`${server}${porta}/criar_foco/${latitude}/${longitude}/${user.nome}`, {
         method: 'POST',

@@ -19,14 +19,14 @@ export default function Principal({ navigation }) {
   const [servico, setServico] = useState([])
   const { user, location} = useContext(AuthContext);
 
-  console.log(user)
+  let latitude, longitude;
 
- 
-  console.log(location);
-  console.log(user.status)
+  if (location && location.coords) {
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
+  }
 
-
-  return user.status === 'usuario' ? (
+  return (
     <View style={styles.container}>
       <ImageBackground
         source={require("../assets/fundo.png")}
@@ -36,23 +36,11 @@ export default function Principal({ navigation }) {
         <View style={styles.caixa}>
             <View style={styles.cameraNossa}>
               <Image source={require("../assets/logo.png")} style={styles.logo} />
-              <CameraApp/>
-          </View>
-        </View>
-      </ImageBackground>
-    </View>
-  ):
-  (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/fundo.png")}
-        resizeMode="cover"
-        style={styles.fundoPreto}
-      >
-        <View style={styles.caixa}>
-            <View style={styles.cameraNossa}>
-              <Image source={require("../assets/logo.png")} style={styles.logo} />
-              <Gerenciar/>
+              {user.status === 'usuario' ? (
+              <CameraApp user={user} latitude={latitude} longitude={longitude} />
+            ) : (
+              <Gerenciar />
+            )}
           </View>
         </View>
       </ImageBackground>

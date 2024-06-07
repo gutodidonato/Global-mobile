@@ -1,87 +1,78 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, View, Text } from 'react-native';
-import { AuthContext } from '../contexts/auth';
 
-export default function Mapeamento() {
-  const { user, logar, deslogar, location} = useContext(AuthContext);
+export default function Mapeamento({ user, latitude, longitude }) {
+  const [local, setLocal] = useState([]);
+  const [initialRegion, setInitialRegion] = useState(null);
 
-  const latitudePos = location["coords"]["latitude"];
-  const longitudePos = location["coords"]["longitude"];
+  const server = 'http://192.168.0.83';
+  const porta = ':8080';
 
-  const foco = [
-    { latitude: 23.52, longitude: 46.69, nome: 'foco1' }
-  ];
+  useEffect(() => {
+    if (latitude !== null && longitude !== null) {
+      makeAPICall();
+      setInitialRegion({
+        latitude: latitude,
+        longitude: longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  }, [latitude, longitude]);
 
+  const makeAPICall = async () => {
+    try {
+      const response = await fetch(`${server}${porta}/focos/${latitude}/${longitude}`, { mode: 'cors' });
+      const data = await response.json();
+      setLocal(data);
+    } catch (e) {
+      console.error('Error fetching focos:', e);
+    }
+  };
 
   const renderStatus = () => {
-    return user.status === 'cliente' ? (
+    const userIsEmpresa = user.status === 'empresa';
+    if (initialRegion === null) {
+      return 
+    }
+  
+    return (
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
-        initialRegion={{
-          latitude: latitudePos,
-          longitude: longitudePos,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}>
+        initialRegion={initialRegion}
+      >
         <Marker
           coordinate={{
-            latitude: latitudePos,
-            longitude: longitudePos,
+            latitude: initialRegion.latitude,
+            longitude: initialRegion.longitude,
           }}
           description="Você está aqui"
-          title="Você">
+          title="Você"
+        >
           <View style={styles.myself}>
             <Text style={styles.textos}>Você</Text>
           </View>
         </Marker>
-
-
-        {foco.map((foco, index) => (
-          <Marker
-            key={index}
-            coordinate={{ latitude: foco.latitude, longitude: foco.longitude }}>
-            <View style={styles.foco}>
-              <Text style={styles.textos}>{foco.nome}</Text>
-            </View>
-          </Marker>)
-          )}
-
-
-      </MapView>
-    ) 
-    : 
-    (
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={{
-          latitude: latitudePos,
-          longitude: longitudePos,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}>
-        <Marker
-          coordinate={{
-            latitude: latitudePos,
-            longitude: longitudePos,
-          }}
-          description="Você está aqui"
-          title="Você">
-          <View style={styles.myself}>
-            <Text style={styles.textos}>Você</Text>
-          </View>
-        </Marker>
+        
+        {userIsEmpresa &&
+          local.map((foco, index) => (
+            <Marker
+              key={index}
+              coordinate={{ latitude: foco[1], longitude: foco[2] }}
+            >
+              <View style={styles.myself}>
+                <Text style={styles.textos}>nome:{foco[3]} indice:{foco[0]}</Text>
+              </View>
+            </Marker>
+          ))}
       </MapView>
     );
   };
-
-
-
-
   return renderStatus();
 }
+
 
 const styles = StyleSheet.create({
   map: {

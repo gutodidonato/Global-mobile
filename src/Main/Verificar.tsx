@@ -11,11 +11,19 @@ import { StatusBar } from "expo-status-bar";
 import { useContext, useState } from "react";
 import React from "react";
 import { AuthContext } from "../contexts/auth";
-import Cliente from '../Servico/Mapeamento';
+import Mapeamento from "../Servico/Mapeamento";
 
 
 export default function Verificar({ navigation }) {
-  const { user, logar, deslogar, location} = useContext(AuthContext);
+  const { user, logar, location} = useContext(AuthContext);
+
+  
+  let latitude, longitude;
+
+  if (location && location.coords) {
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
+  }
 
 
 
@@ -27,7 +35,7 @@ export default function Verificar({ navigation }) {
         style={styles.fundoPreto}
       >
         <View style={styles.caixa}>
-          <Cliente/>
+          <Mapeamento user={user} latitude={latitude} longitude={longitude}/>
           </View>
       </ImageBackground>
     </View>

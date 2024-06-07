@@ -7,7 +7,7 @@ export default function Gerenciar() {
   const [nome, setNome] = useState('');
   const [nomeEmpresa, setNomeEmpresa] = useState('');
   const [apagado, setApagado] = useState('');
-  const server = 'http://192.168.15.11'
+  const server = 'http://192.168.0.83'
   const porta = ':8080'
 
 
